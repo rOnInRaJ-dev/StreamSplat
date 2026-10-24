@@ -30,7 +30,7 @@ class SplatModel(StaticEncoder):
         if hasattr(opt, 'compile') and opt.compile:
             self.model = torch.compile(self.model)
         self.gaussian_renderer = gaussian_renderer_dynamic.render
-        self.background = torch.tensor(opt.background_color, dtype=torch.float32, device="cuda")
+        self.register_buffer("background", torch.tensor(opt.background_color, dtype=torch.float32), persistent=False)
 
         # LPIPS loss
         if self.opt.lambda_lpips > 0:

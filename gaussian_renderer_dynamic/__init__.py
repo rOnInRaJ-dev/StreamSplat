@@ -5,8 +5,12 @@ from io import BytesIO
 import numpy as np
 from typing import Union
 
-from diff_gaussian_rasterization_kiui_orth import GaussianRasterizationSettings as GaussianRasterizationSettingsOrth 
-from diff_gaussian_rasterization_kiui_orth import GaussianRasterizer as GaussianRasterizerOrth
+if torch.cuda.is_available():
+    from diff_gaussian_rasterization_kiui_orth import GaussianRasterizationSettings as GaussianRasterizationSettingsOrth 
+    from diff_gaussian_rasterization_kiui_orth import GaussianRasterizer as GaussianRasterizerOrth
+else:  # e.g. macOS / MPS
+    from .torch_rasterizer import GaussianRasterizationSettings as GaussianRasterizationSettingsOrth
+    from .torch_rasterizer import GaussianRasterizer as GaussianRasterizerOrth
 
 from configs.options import Options
 
@@ -66,12 +70,13 @@ def render(gaussians: dict, bg_color: torch.Tensor, timestamps: torch.Tensor = N
            training=True, override_opacity=False,
            ):
     
+    device = gaussians['xyz'].device
     # random background color augmentation
     if training:
-        bg_color = torch.rand(3).cuda()
+        bg_color = torch.rand(3, device=device)
     else:
         # bg_color = torch.tensor([1.0, 1.0, 1.0]).cuda()
-        bg_color = torch.tensor([0.5, 0.5, 0.5]).cuda()
+        bg_color = torch.tensor([0.5, 0.5, 0.5], device=device)
 
     # bg_color = torch.tensor([0.5, 0.5, 0.5]).cuda() 
     L = 0
@@ -97,10 +102,10 @@ def render(gaussians: dict, bg_color: torch.Tensor, timestamps: torch.Tensor = N
         tanfovy=tanfovy,
         bg=bg_color if bg_color is not None else bg_color,
         scale_modifier=scaling_modifier,
-        viewmatrix=view_matrix.cuda(),
-        projmatrix=view_proj_matrix.cuda(),
+        viewmatrix=view_matrix.to(device),
+        projmatrix=view_proj_matrix.to(device),
         sh_degree=0,  
-        campos=campos.cuda(),
+        campos=campos.to(device),
         prefiltered=False,
         debug=False,
     )

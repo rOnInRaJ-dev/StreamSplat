@@ -54,6 +54,24 @@ mkdir -p checkpoints
 # Place it in checkpoints/depth_anything_v2_vitl.pth
 ```
 
+### macOS (Apple Silicon)
+
+Inference and depth preprocessing run on MPS. Without CUDA, the renderer automatically uses a PyTorch port of the rasterizer (`gaussian_renderer_dynamic/torch_rasterizer.py`), so skip steps 1–2 and run:
+
+```bash
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-macos.txt
+```
+
+To get depth maps for your own frames (uses `checkpoints/depth_anything_v2_vitl.pth`):
+
+```bash
+python model/depth_anything/run.py --encoder vitl --img-path /path/to/rgb_frames \
+    --outdir /path/to/depth_maps --pred-only --grayscale
+```
+
+Then run [Inference](#inference) as usual. The training scripts have not been tested on macOS.
+
 ## Dataset Preparation
 
 StreamSplat supports training on multiple datasets. All datasets require pre-computed depth maps using Depth Anything V2.

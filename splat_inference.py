@@ -56,7 +56,7 @@ def load_model_weights(model, decoder_path, device, compile=False):
     
     if decoder_path and os.path.exists(decoder_path):
         print(f"Loading all weights from {decoder_path}")
-        state_dict_dec = load_file(decoder_path, device=device)
+        state_dict_dec = load_file(decoder_path)
         new_state_dict_dec = OrderedDict()
         for k, v in state_dict_dec.items():
             if "_orig_mod." in k and not compile:
@@ -70,8 +70,10 @@ def load_model_weights(model, decoder_path, device, compile=False):
         print(f"Decoder checkpoint path not found or not provided: {decoder_path}")
 
 def main(opt: AllConfigs, args: argparse.Namespace):
-    device = 'cuda'
+    device = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu'
     print(f"Using device: {device}")
+    if device != 'cuda':
+        opt.compile = False  # torch.compile is only set up/tested for CUDA here
     GAP = args.frame_gap
 
     torch.set_float32_matmul_precision('high')

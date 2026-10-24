@@ -147,7 +147,7 @@ def run_inference(opt: Options):
     
     model = Predictor(opt)
     model.eval()
-    device = "cuda"
+    device = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu'
     model.to(device)
 
     print("Running inference...")

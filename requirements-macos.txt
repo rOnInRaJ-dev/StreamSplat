@@ -1,0 +1,18 @@
+# Inference + depth preprocessing on macOS (Apple Silicon / MPS). Versions follow environment.yml except torch.
+torch==2.13.0  # 2.4.1 has MPS bugs (wrong softplus on non-contiguous tensors)
+torchvision==0.28.0
+numpy==1.26.3
+opencv-python-headless==4.10.0.84
+pillow==10.2.0
+imageio==2.36.0
+imageio-ffmpeg==0.5.1
+tyro==0.8.12
+kiui==0.2.14
+safetensors==0.4.5
+einops==0.8.0
+matplotlib==3.9.2
+seaborn==0.13.2
+lpips==0.1.4
+jaxtyping
+scikit-image==0.24.0
+torchmetrics==1.4.3
